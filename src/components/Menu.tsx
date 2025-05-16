@@ -1,114 +1,145 @@
+import Link from "next/link";
+import Image from "next/image";
+
 const menuItems = [
   {
-    title: "MENU",
+    title: "MENÚ",
     items: [
       {
         icon: "/home.png",
-        label: "Home",
+        label: "Inicio",
         href: "/",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/teacher.png",
-        label: "Teachers",
+        label: "Profesores",
         href: "/list/teachers",
         visible: ["admin", "teacher"],
       },
       {
         icon: "/student.png",
-        label: "Students",
+        label: "Estudiantes",
         href: "/list/students",
         visible: ["admin", "teacher"],
       },
       {
         icon: "/parent.png",
-        label: "Parents",
+        label: "Padres",
         href: "/list/parents",
         visible: ["admin", "teacher"],
       },
       {
         icon: "/subject.png",
-        label: "Subjects",
+        label: "Sujetos",
         href: "/list/subjects",
         visible: ["admin"],
       },
       {
         icon: "/class.png",
-        label: "Classes",
+        label: "Clases",
         href: "/list/classes",
         visible: ["admin", "teacher"],
       },
       {
         icon: "/lesson.png",
-        label: "Lessons",
+        label: "Lecciones",
         href: "/list/lessons",
         visible: ["admin", "teacher"],
       },
       {
         icon: "/exam.png",
-        label: "Exams",
+        label: "Exameness",
         href: "/list/exams",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/assignment.png",
-        label: "Assignments",
+        label: "Asignaciones",
         href: "/list/assignments",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/result.png",
-        label: "Results",
+        label: "Resultados",
         href: "/list/results",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/attendance.png",
-        label: "Attendance",
+        label: "Asistencia",
         href: "/list/attendance",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/calendar.png",
-        label: "Events",
+        label: "Eventos",
         href: "/list/events",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/message.png",
-        label: "Messages",
+        label: "Mensajes",
         href: "/list/messages",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/announcement.png",
-        label: "Announcements",
+        label: "Anuncios",
         href: "/list/announcements",
         visible: ["admin", "teacher", "student", "parent"],
       },
     ],
   },
   {
-    title: "OTHER",
+    title: "Otros",
     items: [
       {
         icon: "/profile.png",
-        label: "Profile",
+        label: "Perfil",
         href: "/profile",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/setting.png",
-        label: "Settings",
+        label: "Configuracion",
         href: "/settings",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/logout.png",
-        label: "Logout",
+        label: "Cerrar Sesion",
         href: "/logout",
         visible: ["admin", "teacher", "student", "parent"],
       },
     ],
   },
 ];
+
+const Menu = () => {
+  return (
+    <div className="space-y-6">
+      {menuItems.map((section) => (
+        <div key={section.title}>
+          <span className="text-gray-500 text-xs font-semibold uppercase px-2">
+            {section.title}
+          </span>
+          <div className="mt-2 space-y-1">
+            {section.items.map((item) => (
+              <Link
+                href={item.href}
+                key={item.label}
+                className="flex items-center gap-3 text-sm text-gray-800 hover:text-blue-600 px-3 py-2 rounded hover:bg-gray-100 transition"
+              >
+                <Image src={item.icon} alt={item.label} width={20} height={20} />
+                <span className="hidden lg:block">{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default Menu;
