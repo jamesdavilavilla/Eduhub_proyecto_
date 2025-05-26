@@ -13,8 +13,20 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      colors:{
+        EduhubSky:"#C3EBFA",
+        EduhubSkyLight:"#EDF9FD",
+        EduhubPurple: "#8576FF",
+        EduhubPurpleLight:"#F1F0FF",
+        EduhubBlue:"#7BC9FF",
+        EduhubBlueLight:"#A3FFD6"
+
+      }
     },
   },
   plugins: [],
+  
 };
+
+
 export default config;
