@@ -90,11 +90,11 @@ const SingleStudentPage = () =>{
             <div className="bg-white p-4 rounded-md">
                 <h1 className="text-xl font-semibold">Atajos</h1>
                 <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
-                    <Link className="p-3 rounded-md bg-EduhubSkyLight" href="/">Estudiante&apos;s Lecciones</Link>
-                    <Link className="p-3 rounded-md bg-EduhubPurpleLight" href="/">Estudiante&apos;s Profesores</Link>
-                    <Link className="p-3 rounded-md bg-pink-50" href="/">Estudiante&apos;s Examenes</Link>
-                    <Link className="p-3 rounded-md bg-EduhubSkyLight" href="/">Estudiante&apos;s Asignaciones</Link>
-                    <Link className="p-3 rounded-md bg-EduhubBlueLight" href="/">Estudiante&apos;s Resultados</Link>
+                    <Link className="p-3 rounded-md bg-EduhubSkyLight" href={`/list/lessons?classId=${2}`}>Estudiante&apos;s Lecciones</Link>
+                    <Link className="p-3 rounded-md bg-EduhubPurpleLight" href={`/list/teachers?classId=${2}`}>Estudiante&apos;s Profesores</Link>
+                    <Link className="p-3 rounded-md bg-pink-50" href={`/list/exams?classId=${2}`}>Estudiante&apos;s Examenes</Link>
+                    <Link className="p-3 rounded-md bg-EduhubSkyLight" href={`/list/assignments?classId=${2}`}>Estudiante&apos;s Asignaciones</Link>
+                    <Link className="p-3 rounded-md bg-EduhubBlueLight" href={`/list/results?studentId=${"student2"}`}>Estudiante&apos;s Resultados</Link>
 
                 </div>
             </div>

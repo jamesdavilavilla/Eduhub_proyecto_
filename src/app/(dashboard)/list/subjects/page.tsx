@@ -6,14 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { role } from "@/lib/data";
 import FormModal from "@/components/FormModal";
+import { Prisma, Subject, Teacher } from "@prisma/client";
+import prisma from "@/lib/prisma";
+import { ITEM_PER_PAGE } from "@/lib/settings";
 
 
-type Subject ={
-  id:number; 
-  name:string;
-  teachers:string[];
-}
-
+type SubjectList = Subject & {teachers:Teacher[]}
 const columns = [
   {header:"Nombre De Materia",
      accessor:"name"},
@@ -24,14 +22,10 @@ const columns = [
     accessor:"action",
   },
 ]
-
-
-const SubjectListPage = () => {
-
-  const renderRow = (item:Subject) => (
+const renderRow = (item:SubjectList) => (
     <tr key={item.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-EduhubPurpleLight">
       <td className="flex items-center gap-4 p-4">{item.name}</td>
-      <td className="hidden md:table-cell">{item.teachers.join(",")}</td>
+      <td className="hidden md:table-cell">{item.teachers.map(teacher=>teacher.name).join(",")}</td>
       <td>  
         <div className="flex items-center gap-2">
           {role =="admin" &&(
@@ -45,6 +39,45 @@ const SubjectListPage = () => {
     </tr>
 
   );
+
+
+const SubjectListPage =async({searchParams}:{searchParams:{[key:string]:string | undefined;}}) => {
+
+  const {page, ...queryParams} = searchParams
+
+  const p = page ? parseInt(page) : 1;
+
+  // URL PARAMS CONDITION
+
+  const query: Prisma.SubjectWhereInput = {}
+
+  if(queryParams){
+    for(const [key,value] of Object.entries(queryParams)){
+      if(value !==undefined){
+      switch(key){
+          case "search":
+            query.name = {contains:value, mode:"insensitive"};
+            break;
+            default:
+              break;
+        }
+      } 
+      
+    }
+  }
+  const [data,count] = await prisma.$transaction([
+   prisma.subject.findMany({
+    where:query,
+    include:{
+      teachers:true,
+    },
+    take:ITEM_PER_PAGE,
+    skip:ITEM_PER_PAGE *(p-1),
+     }),
+      prisma.subject.count({where:query})
+  ]);
+
+  
 
 
     return (
@@ -68,9 +101,9 @@ const SubjectListPage = () => {
                 </div>
             </div>
              {/* LIST */}
-            <Table columns={columns} renderRow={renderRow} data={subjectsData}/>
+            <Table columns={columns} renderRow={renderRow} data={data}/>
             {/* PAGINATION */}
-            <Pagination/>
+            <Pagination page={p} count={count}/>
         </div>
     )
 }

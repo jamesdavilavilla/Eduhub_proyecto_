@@ -109,11 +109,11 @@ const SingleTeacherPage = () =>{
             <div className="bg-white p-4 rounded-md">
                 <h1 className="text-xl font-semibold">Atajos</h1>
                 <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
-                    <Link className="p-3 rounded-md bg-EduhubSkyLight" href="/">Profesor&apos;es Clases</Link>
-                    <Link className="p-3 rounded-md bg-EduhubPurpleLight" href="/">Profesor&apos;es Estudiantes</Link>
-                    <Link className="p-3 rounded-md bg-EduhubBlueLight" href="/">Profesor&apos;es Lecciones</Link>
-                    <Link className="p-3 rounded-md bg-pink-50" href="/">Profesor&apos;es Examenes</Link>
-                    <Link className="p-3 rounded-md bg-EduhubSkyLight" href="/">Profesor&apos;es Asignaciones</Link>
+                    <Link className="p-3 rounded-md bg-EduhubSkyLight" href={`/list/classes?supervisorId=${"teacher2"}`}>Profesor&apos;es Clases</Link>
+                    <Link className="p-3 rounded-md bg-EduhubPurpleLight" href={`/list/students?teacherId=${"teacher2"}`}>Profesor&apos;es Estudiantes</Link>
+                    <Link className="p-3 rounded-md bg-EduhubBlueLight" href={`/list/lessons?teacherId=${"teacher2"}`}>Profesor&apos;es Lecciones</Link>
+                    <Link className="p-3 rounded-md bg-pink-50" href={`/list/exams?teacherId=${"teacher2"}`}>Profesor&apos;es Examenes</Link>
+                    <Link className="p-3 rounded-md bg-EduhubSkyLight" href={`/list/assignments?teacherId=${"teacher2"}`}>Profesor&apos;es Asignaciones</Link>
                 </div>
             </div>
             <Announcemets/>

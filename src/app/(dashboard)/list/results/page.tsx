@@ -5,23 +5,26 @@ import {assignmentsData, examsData, lessonsData,resultsData,subjectsData} from "
 import Image from "next/image";
 import Link from "next/link";
 import { role } from "@/lib/data";
+import { Prisma } from "@prisma/client";
+import prisma from "@/lib/prisma";
+import { ITEM_PER_PAGE } from "@/lib/settings";
 
 
-type Result ={
-  id:number; 
-  subject:string;
-  class:string;
-  teacher:string;
-  student:string;
-  type:"exam" | "assignment";
-  date:string;
-  score:number
-
+type ResultList = {
+  id:number;
+  title:string;
+  studentName:string;
+  studentSurname:string;
+  TeacherName: string;
+  TeacherSurname: string;
+  score:number;
+  className: string;
+  startTime: Date;
 }
 
 const columns = [
-  {header:"Nombre De Leccion",
-     accessor:"name"},
+  {header:"Titulo",
+     accessor:"title"},
   {header:"Estudiante",
     accessor:"student",
 
@@ -54,17 +57,14 @@ const columns = [
   },
 ]
 
-
-const ResultListPage = () => {
-
-  const renderRow = (item:Result) => (
+  const renderRow = (item:ResultList) => (
     <tr key={item.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-EduhubPurpleLight">
-      <td className="flex items-center gap-4 p-4">{item.subject}</td>
-      <td >{item.student}</td>
+      <td className="flex items-center gap-4 p-4">{item.title}</td>
+      <td >{item.studentName + " " + item.studentSurname}</td>
       <td className="hidden md:table-cell">{item.score}</td>
-      <td className="hidden md:table-cell">{item.teacher}</td>
-      <td className="hidden md:table-cell">{item.class}</td>
-      <td className="hidden md:table-cell">{item.date}</td>  
+      <td className="hidden md:table-cell">{item.TeacherName + " " + item.TeacherSurname}</td>
+      <td className="hidden md:table-cell">{item.className}</td>
+      <td className="hidden md:table-cell">{new Intl.DateTimeFormat("en-US").format(item.startTime)}</td>  
       <td>  
         <div className="flex items-center gap-2">
           <Link href={"/list/teachers/${item.id}"}>
@@ -80,6 +80,94 @@ const ResultListPage = () => {
     </tr>
 
   );
+
+
+const ResultListPage =async({searchParams}:{searchParams:{[key:string]:string | undefined;}}) => {
+
+  const {page, ...queryParams} = searchParams
+
+  const p = page ? parseInt(page) : 1;
+
+  // URL PARAMS CONDITION
+
+  const query: Prisma.ResultWhereInput = {}
+
+  if(queryParams){
+    for(const [key,value] of Object.entries(queryParams)){
+      if(value !==undefined){
+      switch(key){
+          case "studentId":
+            query.studentId = value;
+            break;
+          case "search":
+            query.OR = [
+              {exam:{title:{contains:value,mode:"insensitive"}}},
+              {student:{name:{contains:value,mode:"insensitive"}}},
+            ]
+            break;
+            default:
+              break;
+        }
+      } 
+      
+    }
+  }
+  const [dataRes,count] = await prisma.$transaction([
+   prisma.result.findMany({
+    where:query,
+    include:{
+      student: {select:{name:true,surname:true}},
+      exam:{
+        include:{
+          lesson:{
+            select:{
+            class:{select:{name:true}},
+            teacher:{select:{name:true, surname:true}}
+            }
+
+          }
+        }
+      },
+      assignment:{
+        include:{
+          lesson:{
+            select:{
+            class:{select:{name:true}},
+            teacher:{select:{name:true, surname:true}}
+            }
+
+          }
+        }
+      }
+    },
+    take:ITEM_PER_PAGE,
+    skip:ITEM_PER_PAGE *(p-1),
+     }),
+      prisma.result.count({where:query})
+  ]);
+
+  const data = dataRes.map(item=>{
+    const assessment = item.exam || item.assignment
+
+    if(!assessment) return null;
+
+    const isExam = "startTime" in assessment;
+
+    return{
+      id:item.id,
+      title:assessment.title,
+      studentName:item.student.name,
+      studentSurname:item.student.surname,
+      TeacherName:assessment.lesson.teacher.name,
+      TeacherSurname:assessment.lesson.teacher.surname,
+      score:item.score,
+      className:assessment.lesson.class.name,
+      startTime: isExam ? assessment.startTime : assessment.startDate
+
+
+    }
+  })
+
 
 
     return (
@@ -104,9 +192,9 @@ const ResultListPage = () => {
                 </div>
             </div>
              {/* LIST */}
-            <Table columns={columns} renderRow={renderRow} data={resultsData}/>
+            <Table columns={columns} renderRow={renderRow} data={data}/>
             {/* PAGINATION */}
-            <Pagination/>
+            <Pagination page={p} count={count}/>
         </div>
     )
 }

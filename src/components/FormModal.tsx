@@ -39,7 +39,7 @@ const FormModal = ({table,type,data,id,
      | "announcement";
     type:"create" | "update" | "delete";
     data?: any ;
-    id?:Number;
+    id?:Number | string;
 }) => {
 
     const size = type === "create" ? "w-8 h-8" : "w-7 h-7"
