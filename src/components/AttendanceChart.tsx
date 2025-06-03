@@ -11,22 +11,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Datos de asistencia por día
-const defaultData = [
-  { name: "Lunes", present: 18, absent: 2 },
-  { name: "Martes", present: 20, absent: 0 },
-  { name: "Miércoles", present: 17, absent: 3 },
-  { name: "Jueves", present: 19, absent: 1 },
-  { name: "Viernes", present: 16, absent: 4 },
-  { name: "Sábado", present: 15, absent: 5 },
-  { name: "Domingo", present: 0, absent: 0 }, // Asumiendo que no hay clases
-];
 
-const AttendanceChart = ({
-  data = defaultData, // Si no pasan props, usa estos por defecto
-}: {
-  data?: { name: string; present: number; absent: number }[];
-}) => {
+const AttendanceChart = ({data}:{data:{name:string,present:number,absent:number}[]}) => {
   return (
     <ResponsiveContainer width="100%" height="90%">
       <BarChart data={data} barSize={20}>
@@ -69,5 +55,4 @@ const AttendanceChart = ({
     </ResponsiveContainer>
   );
 };
-
 export default AttendanceChart;

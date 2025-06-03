@@ -17,20 +17,20 @@ const CountChart = ({ boys, girls }: { boys: number; girls: number }) => {
       fill: "white",
     },
     {
-      name: "Mujeres", 
-      count: boys,
+      name: "Mujeres",
+      count: girls,
       fill: "#7BC9FF",
     },
     {
       name: "Hombres",
-      count: girls,
+      count: boys,
       fill: "#8576FF",
     },
   ];
 
   return (
-    <div className="relative w-full h-[75%]">
-      <ResponsiveContainer>
+    <div className="relative w-full h-[200px] md:h-[250px]">
+      <ResponsiveContainer width="100%" height="100%">
         <RadialBarChart
           cx="50%"
           cy="50%"
@@ -39,14 +39,18 @@ const CountChart = ({ boys, girls }: { boys: number; girls: number }) => {
           barSize={32}
           data={data}
         >
-          <RadialBar background dataKey="count" />
+          <RadialBar
+            minAngle={15}
+            background
+            clockWise
+            dataKey="count"
+          />
         </RadialBarChart>
       </ResponsiveContainer>
 
-      {/* Ícono centrado */}
       <Image
         src="/maleFemale.png"
-        alt="Ícono de género"
+        alt="Icono"
         width={50}
         height={50}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"

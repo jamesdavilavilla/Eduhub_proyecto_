@@ -163,7 +163,7 @@ const ExamListPage =async({searchParams}:{searchParams:{[key:string]:string | un
                         <button className="w-8 h-8 flex items-center justify-center rounded-full bg-EduhubBlue">
                           <Image src="/sort.png" alt="Ícono de filtro" width={14} height={14} />
                         </button>
-                        {role === "admin" && (<FormModal table="exam" type="create"/>)}                        
+                        {(role === "admin" || role  === "teacher") && <FormModal table="exam" type="create"/>}                        
                     </div>
                 </div>
             </div>

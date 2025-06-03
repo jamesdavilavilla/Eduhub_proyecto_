@@ -1,14 +1,15 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch"
-import {lessonsData,subjectsData} from "@/lib/data";
+import {subjectsData} from "@/lib/data";
 import Image from "next/image";
 import Link from "next/link";
-import { role } from "@/lib/data";
+
 import FormModal from "@/components/FormModal";
 import { Class, Lesson, Prisma, Subject, Teacher } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { role } from "@/lib/utils";
 
 type LessonList = Lesson & {subject:Subject} & {class:Class} & {teacher:Teacher}
 
@@ -24,9 +25,9 @@ const columns = [
         accessor:"teacher",
         className: "hidden md:table-cell",
     },
-  {header:"Acciones",
+  ...(role ==="admin" ?[{header:"Acciones",
     accessor:"action",
-  },
+  }]: []),
 ]
 const renderRow = (item:LessonList) => (
     <tr key={item.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-EduhubPurpleLight">

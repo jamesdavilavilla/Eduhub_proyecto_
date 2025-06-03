@@ -177,7 +177,9 @@ const AssignmentListPage =async({searchParams}:{searchParams:{[key:string]:strin
                         {role === "admin" && (
                             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-EduhubBlue">
                           <Image src="/plus.png" alt="Ícono de filtro" width={14} height={14} />
-                        </button>)}                        
+                        </button>)}
+                        {(role === "admin" || role  === "teacher") && <FormModal table="assignment" type="create"/>}                        
+               
                     </div>
                 </div>
             </div>

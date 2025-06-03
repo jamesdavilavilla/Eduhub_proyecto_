@@ -1,10 +1,9 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch"
-import { teachersData } from "@/lib/data";
 import Image from "next/image";
 import Link from "next/link";
-import { role } from "@/lib/data";
+import { role } from "@/lib/utils";
 import FormModal from "@/components/FormModal";
 import { Class, Prisma, PrismaClient, Subject, Teacher } from "@prisma/client";
 import prisma from "@/lib/prisma";
@@ -32,9 +31,9 @@ const columns = [
   {header:"Direccion",
     accessor:"address",
     className:"hidden lg:table-cell"},
-  {header:"Acciones",
+  ...(role === "admin" ?[{header:"Acciones",
     accessor:"action",
-  },
+  }]:[]),
 ]
 
   const renderRow = (item:TeacherList) => (

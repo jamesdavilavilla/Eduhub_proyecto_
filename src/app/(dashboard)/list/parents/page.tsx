@@ -1,14 +1,13 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch"
-import { parentsData} from "@/lib/data";
 import Image from "next/image";
 import Link from "next/link";
-import { role } from "@/lib/data";
 import FormModal from "@/components/FormModal";
 import { Parent, Prisma, Student } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { role } from "@/lib/utils";
 
 
 type ParentList = Parent & {students:Student[]}
@@ -24,13 +23,11 @@ const columns = [
   {header:"Direccion",
     accessor:"address",
     className:"hidden lg:table-cell"},
-  {header:"Acciones",
+  ...( role === "admin" ?[{header:"Acciones",
     accessor:"action",
-  },
+  }]: []),
 ]
 
-
-const ParentListPage = () => {
 
   const renderRow = (item:ParentList) => (
     <tr key={item.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-EduhubPurpleLight">
@@ -57,43 +54,59 @@ const ParentListPage = () => {
     </tr>
 
   );
-
-const ParentListPage =async({searchParams}:{searchParams:{[key:string]:string | undefined;}}) => {
-
-  const {page, ...queryParams} = searchParams
-
+const ParentListPage = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) => {
+  const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
 
-  // URL PARAMS CONDITION
+  const query: Prisma.ParentWhereInput = {};
 
-  const query: Prisma.ParentWhereInput = {}
-
-  if(queryParams){
-    for(const [key,value] of Object.entries(queryParams)){
-      if(value !==undefined){
-      switch(key){
-          case "search":
-            query.name = {contains:value, mode:"insensitive"};
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined) {
+        switch (key) {
+          case "teacherId":
+            query.students = {
+              some: {
+                class: {
+                  lessons: {
+                    some: {
+                      teacherId: value,
+                    },
+                  },
+                },
+              },
+            };
             break;
-            default:
-              break;
+          case "search":
+            query.name = { contains: value, mode: "insensitive" };
+            break;
+          default:
+            break;
         }
-      } 
-      
+      }
     }
   }
-  const [data,count] = await prisma.$transaction([
-   prisma.parent.findMany({
-    where:query,
-    include:{
-      students:true,
-    },
-    take:ITEM_PER_PAGE,
-    skip:ITEM_PER_PAGE *(p-1),
-     }),
-      prisma.parent.count({where:query})
+
+  const [data, count] = await prisma.$transaction([
+    prisma.parent.findMany({
+      where: query,
+      include: {
+        students: true,
+      },
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
+    }),
+    prisma.parent.count({ where: query }),
   ]);
-  
+
+
+
+
+
 
 
     return (
@@ -111,8 +124,10 @@ const ParentListPage =async({searchParams}:{searchParams:{[key:string]:string | 
                           <Image src="/sort.png" alt="Ícono de filtro" width={14} height={14} />
                         </button>
                         {role === "admin" && (
-
-                         <FormModal table="parent" type="create"/>
+                        //     <button className="w-8 h-8 flex items-center justify-center rounded-full bg-EduhubBlue">
+                        //   <Image src="/plus.png" alt="Ícono de filtro" width={14} height={14} />
+                        // </button>
+                          <FormModal table="parent" type="create"/>
                       )}                        
                     </div>
                 </div>
@@ -123,6 +138,6 @@ const ParentListPage =async({searchParams}:{searchParams:{[key:string]:string | 
             <Pagination page={p} count={count}/>
         </div>
     )
-}}
+}
 
-export default ParentListPage;
+export default ParentListPage

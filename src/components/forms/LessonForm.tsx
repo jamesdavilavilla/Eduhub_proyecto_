@@ -29,7 +29,7 @@ const schema = z.object({
 
 type Inputs = z.infer<typeof schema>;
 
-const ParentForm = ({
+const LessonForm = ({
     type,
     data,
 }:{
@@ -136,4 +136,4 @@ const onsubmit = handleSubmit(data=>{
 }
 
 
-export default ParentForm
+export default LessonForm

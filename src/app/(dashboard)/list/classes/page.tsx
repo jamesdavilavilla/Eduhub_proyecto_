@@ -3,7 +3,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch"
 import Image from "next/image";
 import Link from "next/link";
-import FormModal from "@/components/FormModal";
+import FormContainer from "@/components/FormContainer";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import prisma from "@/lib/prisma";
 import { Class, Prisma, Teacher } from "@prisma/client";
@@ -45,8 +45,8 @@ const columns = [
         <div className="flex items-center gap-2">
           {role =="admin" &&(
             <>
-             <FormModal table="class" type="update" data={item}/>
-             <FormModal table="class" type="delete" id={item.id}/>         
+             <FormContainer table="class" type="update" data={item}/>
+             <FormContainer table="class" type="delete" id={item.id}/>         
             </>)}
         </div>
       </td>
@@ -112,7 +112,7 @@ const ClassListPage =async({searchParams}:{searchParams:{[key:string]:string | u
                           <Image src="/sort.png" alt="Ícono de filtro" width={14} height={14} />
                         </button>
                         {role === "admin" && (
-                          <FormModal table="class" type="create"/>)}                        
+                          <FormContainer table="class" type="create"/>)}                        
                     </div>
                 </div>
             </div>
