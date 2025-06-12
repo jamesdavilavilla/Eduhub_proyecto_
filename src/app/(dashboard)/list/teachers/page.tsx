@@ -4,10 +4,11 @@ import TableSearch from "@/components/TableSearch"
 import Image from "next/image";
 import Link from "next/link";
 import { role } from "@/lib/utils";
-import FormModal from "@/components/FormModal";
+
 import { Class, Prisma, PrismaClient, Subject, Teacher } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import {ITEM_PER_PAGE} from "@/lib/settings"
+import FormContainer from "@/components/FormContainer";
 
 
 type TeacherList = Teacher & {subjects:Subject[]} & {classes:Class[]}
@@ -52,7 +53,7 @@ const columns = [
       <td className="hidden md:table-cell">{item.address}</td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={"/list/teachers/${item.id}"}>
+          <Link href={`/list/teachers/${item.id}`}>
           <button className="w-7 h-7 flex items-center justify-center rounded-full bg-EduhubSky">
             <Image src="/view.png" alt="" width={16} height={16}/>
           </button>
@@ -61,7 +62,7 @@ const columns = [
           //   <button className="w-7 h-7 flex items-center justify-center rounded-full bg-EduhubPurple">
           //   <Image src="/delete.png" alt="" width={16} height={16}/>
           // </button>
-            <FormModal table="teacher" type="delete" id={item.id}/>
+            <FormContainer table="teacher" type="delete" id={item.id}/>
         )}
         </div>
       </td>
@@ -135,7 +136,7 @@ const TeacherListPage = async ({searchParams}:{searchParams:{[key:string]:string
                         //   <button className="w-8 h-8 flex items-center justify-center rounded-full bg-EduhubBlue">
                         //   <Image src="/plus.png" alt="Ícono de filtro" width={14} height={14} />
                         // </button>
-                        <FormModal table="teacher" type="create"/>
+                        <FormContainer table="teacher" type="create"/>
                         )}                        
                     </div>
                 </div>

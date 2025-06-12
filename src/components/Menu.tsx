@@ -51,7 +51,7 @@ const menuItems = [
       },
       {
         icon: "/exam.png",
-        label: "Exameness",
+        label: "Examenes",
         href: "/list/exams",
         visible: ["admin", "teacher", "student", "parent"],
       },
@@ -77,12 +77,6 @@ const menuItems = [
         icon: "/calendar.png",
         label: "Eventos",
         href: "/list/events",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/message.png",
-        label: "Mensajes",
-        href: "/list/messages",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
