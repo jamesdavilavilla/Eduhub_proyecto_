@@ -1,10 +1,16 @@
 import { auth } from "@clerk/nextjs/server";
 import { date } from "zod/v4";
 
-const { userId, sessionClaims } = await auth();
-export const role = (sessionClaims?.metadata as { role?: string })?.role;
+export const getCurrentUserId = async () => {
+  const { userId } = await auth();
+  return userId;
+};
 
-export const currentUserId = userId;
+// Función que retorna el rol del usuario
+export const getUserRole = async (): Promise<string | undefined> => {
+  const { sessionClaims } = await auth();
+  return (sessionClaims?.metadata as { role?: string })?.role;
+};
 
 
 const currentWorkWeek = ()=>{

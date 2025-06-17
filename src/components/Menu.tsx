@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { currentUser } from "@clerk/nextjs/server";
-
+import { SignOutButton } from "@clerk/nextjs";
 
 const menuItems = [
   {
@@ -91,31 +91,19 @@ const menuItems = [
     title: "Otros",
     items: [
       {
-        icon: "/profile.png",
-        label: "Perfil",
-        href: "/profile",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/setting.png",
-        label: "Configuracion",
-        href: "/settings",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
         icon: "/logout.png",
         label: "Cerrar Sesion",
-        href: "/logout",
+        href: "/logout", // Este ya no se usa, pero lo dejamos por compatibilidad
         visible: ["admin", "teacher", "student", "parent"],
       },
     ],
   },
 ];
 
-const Menu =  async() => {
-
-  const user = await currentUser()
+const Menu = async () => {
+  const user = await currentUser();
   const role = user?.publicMetadata.role as string;
+
   return (
     <div className="space-y-6">
       {menuItems.map((section) => (
@@ -125,24 +113,39 @@ const Menu =  async() => {
           </span>
           <div className="mt-2 space-y-1">
             {section.items.map((item) => {
-              if (item.visible.includes(role)) {
+              if (!item.visible.includes(role)) return null;
+
+              if (item.label === "Cerrar Sesion") {
                 return (
-                  <Link
-                    href={item.href}
-                    key={item.label}
-                    className="flex items-center gap-3 text-sm text-gray-800 hover:text-blue-600 px-3 py-2 rounded hover:bg-gray-100 transition"
-                  >
-                    <Image
-                      src={item.icon}
-                      alt={item.label}
-                      width={20}
-                      height={20}
-                    />
-                    <span className="hidden lg:block">{item.label}</span>
-                  </Link>
+                  <SignOutButton key={item.label}>
+                    <button className="flex items-center gap-3 text-sm text-gray-800 hover:text-blue-600 px-3 py-2 rounded hover:bg-gray-100 transition w-full text-left">
+                      <Image
+                        src={item.icon}
+                        alt={item.label}
+                        width={20}
+                        height={20}
+                      />
+                      <span className="hidden lg:block">{item.label}</span>
+                    </button>
+                  </SignOutButton>
                 );
               }
-              return null;
+
+              return (
+                <Link
+                  href={item.href}
+                  key={item.label}
+                  className="flex items-center gap-3 text-sm text-gray-800 hover:text-blue-600 px-3 py-2 rounded hover:bg-gray-100 transition"
+                >
+                  <Image
+                    src={item.icon}
+                    alt={item.label}
+                    width={20}
+                    height={20}
+                  />
+                  <span className="hidden lg:block">{item.label}</span>
+                </Link>
+              );
             })}
           </div>
         </div>
@@ -152,4 +155,3 @@ const Menu =  async() => {
 };
 
 export default Menu;
-

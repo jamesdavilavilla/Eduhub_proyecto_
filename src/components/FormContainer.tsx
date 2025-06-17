@@ -49,6 +49,16 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         relatedData = { subjects: teacherSubjects};
         break;
       }
+      case "student": {
+        const studentGrades = await prisma.grade.findMany({
+          select: { id: true, level: true },
+        });
+        const studentClasses = await prisma.class.findMany({
+          include:{_count:{select:{students:true}}}
+        });
+        relatedData = { classes: studentClasses, grades: studentGrades};
+        break;
+      }
       case "lesson": {
         const lessonTeachers = await prisma.teacher.findMany({
           select: { id: true, name: true, surname: true },
@@ -73,6 +83,52 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         relatedData = { lessons: assignmentLessons };
         break;
       }
+      case "exam": {
+        const examLessons = await prisma.lesson.findMany({
+          select: { id: true, name: true },
+        });
+        relatedData = { lessons: examLessons };
+        break;
+}
+      case "announcement": {
+         const announcementClasses = await prisma.class.findMany({
+            select: { id: true, name: true },
+          });
+         relatedData = { classes: announcementClasses };
+        break;
+}
+
+case "event": {
+  const eventClasses = await prisma.class.findMany({
+    select: { id: true, name: true },
+  });
+  relatedData = { classes: eventClasses };
+  break;
+}
+case "result": {
+  const exams = await prisma.exam.findMany({ select: { id: true, title: true } });
+  const assignments = await prisma.assignment.findMany({ select: { id: true, title: true } });
+  const students = await prisma.student.findMany({
+    select: { id: true, name: true, surname: true }
+  });
+
+  relatedData = { exams, assignments, students };
+  break;
+}
+case "attendance": {
+  const students = await prisma.student.findMany({
+    select: { id: true, name: true, surname: true },
+  });
+  const lessons = await prisma.lesson.findMany({
+    select: {
+      id: true,
+      subject: { select: { name: true } },
+      class: { select: { name: true } },
+    },
+  });
+  relatedData = { students, lessons };
+  break;
+}
 
       default:
         break;

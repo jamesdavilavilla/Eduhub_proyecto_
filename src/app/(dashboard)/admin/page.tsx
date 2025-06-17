@@ -1,6 +1,5 @@
 import UserCard from "@/components/UserCard"
 import AttendanceChart from "@/components/AttendanceChart"
-import FinanceChart from "@/components/FinanceChart"
 import EventCalendar from "@/components/EventCalendar"
 import Announcemets from "@/components/Announcements"
 import CountChartContainer from "@/components/CountCharContainer"
@@ -13,7 +12,6 @@ const AdminPage = async ({searchParams}:{searchParams:{[keys:string]:string | un
             <div className="w-full lg:w-2/3 flex flex-col gap-8">
             {/* USER CARDS */}
             <div className="flex gap-4 justify-between flex-wrap">
-                <UserCard type="admin"/>
                 <UserCard type="teacher"/>
                 <UserCard type="parent"/>
                 <UserCard type="student"/>
@@ -28,11 +26,6 @@ const AdminPage = async ({searchParams}:{searchParams:{[keys:string]:string | un
                 <div className="w-full lg:w-2/3 h-[450px]">
                     <AttendanceChartContainer/>
                 </div>
-            </div>
-
-            {/* BOTTOM CHART */}
-            <div className="w-full h-[500px]">
-                <FinanceChart/>
             </div>
 
             </div>

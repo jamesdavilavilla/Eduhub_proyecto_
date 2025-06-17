@@ -1,6 +1,6 @@
 "use client"
 
-import { deleteAssignment, deleteClass, deleteLesson, deleteSubject, deleteTeacher } from "@/lib/actions";
+import { deleteAnnouncement, deleteAssignment, deleteClass, deleteEvent, deleteExam, deleteLesson, deleteParent, deleteResult, deleteStudent, deleteSubject, deleteTeacher } from "@/lib/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -16,15 +16,15 @@ const deleteActionMap = {
     subject: deleteSubject,
     class: deleteClass,
     teacher: deleteTeacher,
-    student: deleteSubject,
-    parent: deleteSubject,
+    student: deleteStudent,
+    parent: deleteParent,
     lesson: deleteLesson,
-    exam: deleteSubject,
+    exam: deleteExam,
     assignment: deleteAssignment,
-    result: deleteSubject,
+    result: deleteResult,
     attendance:deleteSubject,
-    event: deleteSubject,
-    announcement: deleteSubject
+    event: deleteEvent,
+    announcement: deleteAnnouncement,
 }
 
 const AnnouncementForm = dynamic(() =>import("./forms/AnnouncementForm"),{
@@ -108,7 +108,7 @@ const FormModal = ({table,type,data,id,relatedData
 
         useEffect(()=>{
             if(state.success){
-                   toast(`La materia ha sido Borrada`);
+                   toast(`${table}ha sido Borrada`);
                     setOpen(false);
                      router.refresh();
                     }

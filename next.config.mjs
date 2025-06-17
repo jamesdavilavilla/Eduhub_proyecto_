@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images:{
-        remotePatterns:[{hostname:"images.pexels.com"}],
-     domains: ['res.cloudinary.com'], // agrega aquí el dominio externo
-
-    },
+  images: {
+    domains: ['res.cloudinary.com', 'images.pexels.com'],
+  },
 };
 
 export default nextConfig;

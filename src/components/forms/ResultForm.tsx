@@ -1,139 +1,148 @@
-"use client"
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { Dispatch, SetStateAction, useEffect } from "react";
+import { useFormState } from "react-dom";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+
 import InputField from "../InputField";
-import Image from "next/image";
-
-
-const schema = z.object({
-    username: z.string()
-    .min(3, {message:'El usuario debe tener mas de 3 caracteres!'})
-    .max(20, {message:'El usuario debe tener menos de 20 caracteres!'}),
-    email: z.string().email({message:"Correo electronico invalido"}),
-    password:z.string().min(8,{message:"La contraseña debe tener  mas de 8 caracteres!"}),
-    firstName:z.string().min(1,{message:"El primer nombre es requerido!"}),
-    lastName:z.string().min(1,{message:"El apellido es requerido!"}),
-    phone:z.string().min(1,{message:"El numero de telefono es requerido!"}),
-    address:z.string().min(1,{message:"La direccion es requerida!"}),
-    bloodType:z.string().min(1,{message:"El tipo de sangre es requerida!"}),
-    birthday:z.date({message:"La fecha de nacimiento es requerida"}),
-    sex: z.enum(["hombre","mujer"],{message:"el sexo es requerido!"}),
-    img:z.instanceof(File,{message:"La imagen es requerida!"})
-
-
-
-
-});
-
-type Inputs = z.infer<typeof schema>;
+import { resultSchema, ResultSchema } from "@/lib/formValidationSchemas";
+import { createResult, updateResult } from "@/lib/actions";
 
 const ResultForm = ({
-    type,
-    data,
-}:{
-    type:"create" | "update"; 
-    data?:any;
+  type,
+  data,
+  setOpen,
+  relatedData
+}: {
+  type: "create" | "update";
+  data?: any;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  relatedData?: any;
 }) => {
-            const{
-            register,
-            handleSubmit,
-            formState: { errors },
-        } = useForm<Inputs>({
-            resolver: zodResolver(schema)
-        });
-const onsubmit = handleSubmit(data=>{
-    console.log(data);
-})
-    return (
-        <form className="flex flex-col gap-8" onSubmit={onsubmit}>
-            <h1 className="text-xl font-semibold">Agregar un nuevo Padre</h1>
-            <span className="text-xs text-gray-400 font-medium">Informacion de autenticacion</span>
-            <div className="flex justify-between flex-wrap gap-4">
-                <InputField 
-                label="Username"
-                name="username" 
-                defaultValue={data?.username}
-                register={register} 
-                error={errors?.username}/>
-                <InputField 
-                label="Email"
-                name="email"
-                type="email" 
-                defaultValue={data?.email}
-                register={register} 
-                error={errors?.email}/>
-                <InputField 
-                label="Password"
-                name="password" 
-                type="password"
-                defaultValue={data?.password}
-                register={register} 
-                error={errors?.password}/>
-            </div>
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<ResultSchema>({
+    resolver: zodResolver(resultSchema)
+  });
 
-                <span className="text-xs text-gray-400 font-medium">Informacion personal</span>
-             <div className="flex justify-between flex-wrap gap-4">
+  const [state, formAction] = useFormState(
+    type === "create" ? createResult : updateResult,
+    { success: false, error: false }
+  );
 
-                <InputField 
-                label="Nombre"
-                name="firstName" 
-                defaultValue={data?.firstName}
-                register={register} 
-                error={errors?.firstName}/>
-                <InputField 
-                label="Apellido"
-                name="lastName" 
-                defaultValue={data?.lastName}
-                register={register} 
-                error={errors?.lastName}/>
-                <InputField 
-                label="Celular"
-                name="phone" 
-                defaultValue={data?.phone}
-                register={register} 
-                error={errors?.phone}/>
-                <InputField 
-                label="Direccion"
-                name="address" 
-                defaultValue={data?.address}
-                register={register} 
-                error={errors?.address}/>
-                <InputField 
-                label="Tipo de sangre"
-                name="bloodType" 
-                defaultValue={data?.bloodType}
-                register={register} 
-                error={errors?.bloodType}/>
-                <InputField 
-                label="Fecha de nacimiento"
-                name="birthday" 
-                defaultValue={data?.birthday}
-                register={register} 
-                error={errors?.birthday}
-                type="date"
-                />
-            <div className="flex flex-col gap-2 w-full md:w-1/4">
-             <label className="text-xs text-gray-500">sexo</label>
-             <select className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"{...register("sex")} defaultValue={data?.sex}>
-                <option value="male">Hombre</option>
-                <option value="female">Mujer</option>
+  const router = useRouter();
 
-             </select>
-             {errors.sex?.message && (
-                <p className="text-xs text-red-400">
-                    {errors.sex.message.toString()}
-                </p>
-             )}
-            </div> 
-            </div>
+  const onSubmit = handleSubmit((formData) => {
+    if (type === "update") formData.id = data?.id?.toString();
+    formAction(formData);
+  });
 
-            <button className="bg-blue-400 text-white p-2 rounded-md">{type==="create" ? "Create" : "Update"}</button>
+  useEffect(() => {
+    if (state.success) {
+      toast(`El resultado ha sido ${type === "create" ? "creado" : "actualizado"} correctamente`);
+      setOpen(false);
+      router.refresh();
+    }
+  }, [state]);
 
-        </form>
-    )
-}
+  // ✅ Arreglo: fallback por si relatedData no existe
+  const { exams = [], assignments = [], students = [] } = relatedData || {};
 
+  return (
+    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+      <h1 className="text-xl font-semibold">
+        {type === "create" ? "Crear resultado" : "Actualizar resultado"}
+      </h1>
 
-export default ResultForm
+      <InputField
+        label="Puntaje"
+        name="score"
+        type="number"
+        defaultValue={data?.score}
+        register={register}
+        error={errors?.score}
+      />
+
+      <div className="flex flex-col gap-2">
+        <label className="text-xs text-gray-500">Estudiante</label>
+        <select
+          className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+          {...register("studentId")}
+          defaultValue={data?.studentId || ""}
+        >
+          <option value="">Selecciona un estudiante</option>
+          {students.map((student: { id: string; name: string; surname: string }) => (
+            <option key={student.id} value={student.id}>
+              {student.name} {student.surname}
+            </option>
+          ))}
+        </select>
+        {errors.studentId?.message && (
+          <p className="text-xs text-red-400">{errors.studentId.message}</p>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label className="text-xs text-gray-500">Examen (opcional)</label>
+        <select
+          className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+          {...register("examId")}
+          defaultValue={data?.examId?.toString() || ""}
+        >
+          <option value="">Selecciona un examen</option>
+          {exams.map((exam: { id: number; title: string }) => (
+            <option key={exam.id} value={exam.id}>
+              {exam.title}
+            </option>
+          ))}
+        </select>
+        {errors.examId?.message && (
+          <p className="text-xs text-red-400">{errors.examId.message}</p>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label className="text-xs text-gray-500">Asignación (opcional)</label>
+        <select
+          className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+          {...register("assignmentId")}
+          defaultValue={data?.assignmentId?.toString() || ""}
+        >
+          <option value="">Selecciona una asignación</option>
+          {assignments.map((assignment: { id: number; title: string }) => (
+            <option key={assignment.id} value={assignment.id}>
+              {assignment.title}
+            </option>
+          ))}
+        </select>
+        {errors.assignmentId?.message && (
+          <p className="text-xs text-red-400">{errors.assignmentId.message}</p>
+        )}
+      </div>
+
+      {type === "update" && (
+        <InputField
+          label="ID"
+          name="id"
+          defaultValue={data?.id}
+          register={register}
+          error={errors?.id}
+          hidden
+        />
+      )}
+
+      {state.error && <span className="text-red-500 text-sm">¡Ocurrió un error!</span>}
+
+      <button className="bg-blue-500 text-white p-2 rounded-md">
+        {type === "create" ? "Crear" : "Actualizar"}
+      </button>
+    </form>
+  );
+};
+
+export default ResultForm;
