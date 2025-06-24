@@ -15,6 +15,7 @@ type Props = {
   lessons: Lesson[];
   subjectId: number;
   lessonDays: number[];
+  editable: boolean; // 👈 NUEVO
 };
 
 export default function AttendanceTable({
@@ -25,6 +26,7 @@ export default function AttendanceTable({
   lessons,
   subjectId,
   lessonDays,
+  editable, // 👈 NUEVO
 }: Props) {
   const [attendances, setAttendances] = useState(initialAttendances);
   const [isPending, startTransition] = useTransition();
@@ -35,6 +37,8 @@ export default function AttendanceTable({
     a.getDate() === b.getDate();
 
   const handleClick = (studentId: string, lessonId: number, date: Date) => {
+    if (!editable) return; // ❌ No permitir si no tiene permiso
+
     startTransition(async () => {
       const updated = await toggleAttendance(
         studentId,
@@ -79,11 +83,7 @@ export default function AttendanceTable({
             sameDay(new Date(a.date), date)
         );
 
-        if (attendance) {
-          row[d] = attendance.present ? "✔️" : "❌";
-        } else {
-          row[d] = "❌";
-        }
+        row[d] = attendance?.present ? "✔️" : "❌";
       }
       return row;
     });
@@ -151,9 +151,15 @@ export default function AttendanceTable({
                 return (
                   <td
                     key={d}
-                    className={`border p-1 cursor-pointer transition-all duration-200 ${isPresent ? "bg-green-200" : "bg-red-200"}`}
+                    className={`border p-1 transition-all duration-200 ${
+                      isPresent ? "bg-green-200" : "bg-red-200"
+                    } ${editable ? "cursor-pointer hover:brightness-95" : "cursor-not-allowed opacity-70"}`}
                     onClick={() => handleClick(s.id, lesson.id, date)}
-                    title="Haz clic para alternar asistencia"
+                    title={
+                      editable
+                        ? "Haz clic para alternar asistencia"
+                        : "Solo lectura"
+                    }
                   >
                     {isPresent ? "✔️" : "❌"}
                   </td>
