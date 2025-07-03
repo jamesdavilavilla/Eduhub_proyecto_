@@ -113,7 +113,7 @@ const SingleTeacherPage = async ({
         </div>
         {/* BOTTOM */}
         <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
-          <h1>Teacher&apos;s Horario</h1>
+          <h1>Profesor Horario</h1>
           <BigCalendarContainer type="teacherId" id={teacher.id} />
         </div>
       </div>
@@ -123,19 +123,19 @@ const SingleTeacherPage = async ({
           <h1 className="text-xl font-semibold">Atajos</h1>
           <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
             <Link className="p-3 rounded-md bg-EduhubSkyLight" href={`/list/classes?supervisorId=${teacher.id}`}>
-              Profesor&apos; Clases
+              Profesor Clases
             </Link>
             <Link className="p-3 rounded-md bg-EduhubPurpleLight" href={`/list/students?teacherId=${teacher.id}`}>
-              Profesor&apos; Estudiantes
+              Profesor Estudiantes
             </Link>
             <Link className="p-3 rounded-md bg-EduhubBlueLight" href={`/list/lessons?teacherId=${teacher.id}`}>
-              Profesor&apos; Lecciones
+              Profesor Lecciones
             </Link>
             <Link className="p-3 rounded-md bg-pink-50" href={`/list/exams?teacherId=${teacher.id}`}>
-              Profesor&apos; Examenes
+              Profesor Examenes
             </Link>
             <Link className="p-3 rounded-md bg-EduhubSkyLight" href={`/list/assignments?teacherId=${teacher.id}`}>
-              Profesor&apos; Asignaciones
+              Profesor Asignaciones
             </Link>
           </div>
         </div>
