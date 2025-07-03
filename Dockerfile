@@ -1,42 +1,43 @@
-# Etapa de construcción
+# Etapa 1: Build
 FROM node:20-alpine AS builder
 
+# Configura el directorio de trabajo
 WORKDIR /app
 
-# Copiamos los archivos de dependencias
+# Copia los archivos de dependencias
 COPY package*.json ./
 
-# Instalamos dependencias
+# Instala las dependencias
 RUN npm install
 
-# Copiamos el resto del proyecto
+# Copia el resto del código
 COPY . .
 
-# Generamos Prisma Client
+# Genera Prisma Client
 RUN npx prisma generate
 
-# Build de la app Next.js
+# Genera el build optimizado de Next.js
 RUN npm run build
 
-# Etapa de producción
-FROM node:20-alpine AS runner
+# Etapa 2: Imagen final liviana
+FROM node:20-alpine
 
+# Crea el mismo directorio de trabajo
 WORKDIR /app
 
-# Copiamos lo necesario desde la etapa de build
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
+# Copia las dependencias ya instaladas y el build desde la imagen anterior
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/next.config.mjs ./next.config.mjs
+COPY --from=builder /app/tailwind.config.ts ./tailwind.config.ts
+COPY --from=builder /app/postcss.config.mjs ./postcss.config.mjs
+COPY --from=builder /app/src ./src
 
-ENV NODE_ENV=production
-ENV PORT=3000
-
+# Expone el puerto
 EXPOSE 3000
 
-# Generamos Prisma Client por seguridad (si cambió algo)
-RUN npx prisma generate
-
-# Comando para iniciar Next.js
-CMD ["npm", "run", "start"]
+# Comando por defecto
+CMD ["npm", "start"]

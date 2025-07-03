@@ -4,26 +4,34 @@ services:
   postgres:
     image: postgres:15
     container_name: postgres_db
+    restart: always
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydb
+      POSTGRES_USER: eduhub
+      POSTGRES_PASSWORD: eduhub
+      POSTGRES_DB: eduhub
     ports:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   app:
-    build: .
     container_name: nextjs_app
+    build: .
     ports:
       - '3000:3000'
-    environment:
-      DATABASE_URL: postgresql://myuser:mypassword@postgres:5432/mydb
-      NODE_ENV: production
+    restart: always
     depends_on:
       - postgres
-    command: sh -c "npx prisma generate && npm run start"
+    environment:
+      - DATABASE_URL=postgresql://eduhub:eduhub@postgres:5432/eduhub
+      - NODE_ENV=production
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_bGVuaWVudC1hbnQtNjkuY2xlcmsuYWNjb3VudHMuZGV2JA
+      - CLERK_SECRET_KEY=sk_test_n2bvDJ4mt5eVPiQbSqbU9FrM24vzyNpZ3RzSISQSSi
+      - NEXT_PUBLIC_CLERK_SIGN_IN_URL=/
+      - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=jamesdvcloudinary
+      - NEXT_PUBLIC_CLOUDINARY_API_KEY=893169677158234
+    volumes:
+      - .:/app
 
 volumes:
   postgres_data:
