@@ -40,9 +40,7 @@ const CountChart = ({ boys, girls }: { boys: number; girls: number }) => {
           data={data}
         >
           <RadialBar
-            minAngle={15}
             background
-            clockWise
             dataKey="count"
           />
         </RadialBarChart>
